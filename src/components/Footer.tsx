@@ -9,13 +9,11 @@ export function Footer({ t }: { t: any }) {
       <div className="container">
         <Reveal className="footer-grid">
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+            <div className="footer-brand">
               <CarMark size={28} />
               <Wordmark />
             </div>
-            <p style={{ color: "var(--cream-dim)", fontSize: 14, maxWidth: "36ch", lineHeight: 1.55, margin: 0 }}>
-              {t.footer.tagline}
-            </p>
+            <p className="footer-tagline">{t.footer.tagline}</p>
           </div>
           <div>
             <h5>{t.footer.product}</h5>
@@ -35,8 +33,12 @@ export function Footer({ t }: { t: any }) {
 
         <div className="footer-bottom">
           <span>{t.footer.copy}</span>
-          <span style={{ display: "flex", gap: 18 }}>
-            {t.footer.legal.map((l: string, i: number) => <a key={i} href="#">{l}</a>)}
+          <span className="footer-legal-row">
+            {t.footer.legal.map((l: string, i: number) => (
+              <a key={i} href="#">
+                {l}
+              </a>
+            ))}
           </span>
         </div>
       </div>

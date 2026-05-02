@@ -34,14 +34,16 @@ export function useCounter(
   const isInView = useInView(ref, { once: true, amount: 0.4 });
 
   useEffect(() => {
-    if (isInView) {
-      const controls = animate(0, target, {
-        duration,
-        ease: [0.2, 0.7, 0.2, 1],
-        onUpdate: (value) => setVal(value),
-      });
-      return controls.stop;
-    }
+    if (!isInView) return;
+    const mq =
+      typeof window !== "undefined" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+    const dur = mq?.matches ? 0 : duration;
+    const controls = animate(0, target, {
+      duration: dur,
+      ease: [0.2, 0.7, 0.2, 1],
+      onUpdate: (value) => setVal(value),
+    });
+    return controls.stop;
   }, [isInView, target, duration]);
 
   return [ref, val.toFixed(decimals)] as const;
@@ -72,6 +74,18 @@ export function useScrolled(threshold = 20) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [threshold]);
   return scrolled;
+}
+
+export function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setReduced(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+  return reduced;
 }
 
 export function useScrollY() {

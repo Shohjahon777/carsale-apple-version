@@ -18,6 +18,17 @@ const MOCK_RESPONSES = [
   "You can book a demo by clicking the 'Book a Demo' button in the navigation.",
 ];
 
+const CHAT_SNOOZE_KEY = "carsale_chat_snooze_until";
+const CHAT_DISMISS_KEY = "carsale_chat_dismiss";
+
+function readSnooze(): number {
+  if (typeof window === "undefined") return 0;
+  const raw = localStorage.getItem(CHAT_SNOOZE_KEY);
+  if (!raw) return 0;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -27,10 +38,17 @@ export function Chatbot() {
   const [isTyping, setIsTyping] = useState(false);
   const [unread, setUnread] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isOpenRef = useRef(isOpen);
+  const autoOpenTimer = useRef<number | null>(null);
+  const greetTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
 
   const beep = () => {
     try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioCtx = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!AudioCtx) return;
       const ctx = new AudioCtx();
       const o = ctx.createOscillator();
@@ -48,7 +66,7 @@ export function Chatbot() {
       o.stop(t0 + 0.14);
       o.onended = () => ctx.close();
     } catch {
-      // ignore
+      /* ignore */
     }
   };
 
@@ -60,33 +78,70 @@ export function Chatbot() {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Auto-open once per visitor and greet.
   useEffect(() => {
-    const seen = localStorage.getItem("carsale_chat_seen");
-    if (seen) return;
-    localStorage.setItem("carsale_chat_seen", "1");
-    const tOpen = window.setTimeout(() => setIsOpen(true), 650);
-    const tGreet = window.setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: String(Date.now()),
-          role: "bot",
-          content:
-            "Hello — I’m the Carsale assistant. I can help you explore modules, pricing, rollout steps, and integrations. What are you looking for?",
-        },
-      ]);
-    }, 1050);
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem(CHAT_DISMISS_KEY) === "1") return;
+    const snoozeUntil = readSnooze();
+    if (snoozeUntil > Date.now()) return;
+
+    const hero = document.getElementById("top");
+    const heroBottom = hero ? hero.getBoundingClientRect().bottom + window.scrollY : 600;
+    let opened = false;
+
+    const tryOpen = () => {
+      if (opened) return;
+      opened = true;
+      if (autoOpenTimer.current != null) window.clearTimeout(autoOpenTimer.current);
+      if (greetTimer.current != null) window.clearTimeout(greetTimer.current);
+      setIsOpen(true);
+      setUnread(0);
+      greetTimer.current = window.setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: String(Date.now()),
+            role: "bot",
+            content:
+              "Hello — I'm the Carsale assistant. I can help you explore modules, pricing, rollout steps, and integrations. What are you looking for?",
+          },
+        ]);
+      }, 400) as unknown as number;
+    };
+
+    const onScroll = () => {
+      if (window.scrollY + window.innerHeight * 0.2 >= heroBottom) tryOpen();
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    autoOpenTimer.current = window.setTimeout(() => tryOpen(), 8000) as unknown as number;
+
     return () => {
-      window.clearTimeout(tOpen);
-      window.clearTimeout(tGreet);
+      window.removeEventListener("scroll", onScroll);
+      if (autoOpenTimer.current != null) window.clearTimeout(autoOpenTimer.current);
+      if (greetTimer.current != null) window.clearTimeout(greetTimer.current);
     };
   }, []);
 
-  // Reset unread when opened.
-  useEffect(() => {
-    if (isOpen) setUnread(0);
-  }, [isOpen]);
+  const snoozeDay = () => {
+    const until = Date.now() + 24 * 60 * 60 * 1000;
+    try {
+      localStorage.setItem(CHAT_SNOOZE_KEY, String(until));
+    } catch {
+      /* ignore */
+    }
+    setIsOpen(false);
+  };
+
+  const dismissForever = () => {
+    try {
+      localStorage.setItem(CHAT_DISMISS_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+    setIsOpen(false);
+  };
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,8 +152,7 @@ export function Chatbot() {
     setInput("");
     setIsTyping(true);
 
-    // Mock API delay
-    setTimeout(() => {
+    window.setTimeout(() => {
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: "bot",
@@ -106,7 +160,7 @@ export function Chatbot() {
       };
       setMessages((prev) => [...prev, botMsg]);
       setIsTyping(false);
-      if (!isOpen) {
+      if (!isOpenRef.current) {
         setUnread((c) => Math.min(99, c + 1));
         beep();
       }
@@ -114,7 +168,7 @@ export function Chatbot() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end font-sans">
+    <div className="chatbot-root">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -122,13 +176,12 @@ export function Chatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="chatbot-panel mb-4 w-[340px] sm:w-[380px] h-[500px] max-h-[calc(100vh-120px)] backdrop-blur-xl shadow-2xl rounded-2xl flex flex-col overflow-hidden"
+            className="chatbot-panel mb-4 w-[min(380px,calc(100vw-32px))] h-[min(500px,calc(100vh-120px))] max-h-[calc(100vh-120px)] backdrop-blur-xl shadow-2xl rounded-2xl flex flex-col overflow-hidden"
           >
-            {/* Header */}
             <div className="chatbot-head flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white">
-                  <Bot size={18} />
+                <div className="chatbot-launcher-icon w-8 h-8 rounded-full flex items-center justify-center text-white">
+                  <Bot size={18} aria-hidden="true" />
                 </div>
                 <div>
                   <h3 className="chatbot-title font-medium text-sm">Carsale Assistant</h3>
@@ -136,51 +189,42 @@ export function Chatbot() {
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsOpen(false)}
                 className="chatbot-close p-2 rounded-full transition-colors"
+                aria-label="Close assistant"
               >
-                <X size={18} />
+                <X size={18} aria-hidden="true" />
               </button>
             </div>
 
-            {/* Messages */}
             <div className="chatbot-body flex-1 overflow-y-auto p-5 flex flex-col gap-4">
               {messages.map((msg) => (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   key={msg.id}
-                  className={`flex gap-3 max-w-[85%] ${
-                    msg.role === "user" ? "ml-auto flex-row-reverse" : ""
-                  }`}
+                  className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : ""}`}
                 >
                   <div
                     className={`chatbot-avatar w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
                       msg.role === "user" ? "is-user" : "is-bot"
                     }`}
                   >
-                    {msg.role === "user" ? <User size={14} /> : <Bot size={14} />}
+                    {msg.role === "user" ? <User size={14} aria-hidden="true" /> : <Bot size={14} aria-hidden="true" />}
                   </div>
-                  <div
-                    className={`chatbot-bubble px-4 py-2.5 rounded-2xl text-[13.5px] leading-relaxed ${
-                      msg.role === "user" ? "is-user" : "is-bot"
-                    }`}
-                  >
+                  <div className={`chatbot-bubble px-4 py-2.5 rounded-2xl text-[13.5px] leading-relaxed ${msg.role === "user" ? "is-user" : "is-bot"}`}>
                     {msg.content}
                   </div>
                 </motion.div>
               ))}
               {isTyping && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex gap-3 max-w-[85%]"
-                >
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 max-w-[85%]">
                   <div className="chatbot-avatar w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 is-bot">
-                    <Bot size={14} />
+                    <Bot size={14} aria-hidden="true" />
                   </div>
                   <div className="chatbot-bubble px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1 is-bot">
-                    <Loader2 size={14} className="animate-spin" />
+                    <Loader2 size={14} className="animate-spin" aria-hidden="true" />
                     <span className="text-xs">Typing...</span>
                   </div>
                 </motion.div>
@@ -188,25 +232,32 @@ export function Chatbot() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
             <div className="chatbot-foot p-4">
-              <form
-                onSubmit={handleSend}
-                className="chatbot-form flex items-center gap-2 rounded-full px-2 py-1.5 transition-all"
-              >
+              <div className="flex flex-wrap gap-2 justify-center mb-2 text-[11px] font-mono uppercase tracking-wide text-[var(--cream-mute)]">
+                <button type="button" className="chatbot-muted-link" onClick={snoozeDay}>
+                  Remind me tomorrow
+                </button>
+                <span aria-hidden="true">·</span>
+                <button type="button" className="chatbot-muted-link" onClick={dismissForever}>
+                  Don&apos;t show again
+                </button>
+              </div>
+              <form onSubmit={handleSend} className="chatbot-form flex items-center gap-2 rounded-full px-2 py-1.5 transition-all">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask me anything..."
                   className="chatbot-input flex-1 bg-transparent border-none focus:outline-none text-sm px-3"
+                  aria-label="Message to assistant"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isTyping}
-                  className="chatbot-send p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors"
+                  className="chatbot-send p-2 text-white rounded-full disabled:opacity-50 transition-colors"
+                  aria-label="Send message"
                 >
-                  <Send size={16} className="ml-0.5" />
+                  <Send size={16} className="ml-0.5" aria-hidden="true" />
                 </button>
               </form>
             </div>
@@ -218,11 +269,17 @@ export function Chatbot() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-600/30 flex items-center justify-center hover:bg-blue-700 transition-colors"
+          onClick={() => {
+            setIsOpen((prev) => {
+              const next = !prev;
+              if (next) setUnread(0);
+              return next;
+            });
+          }}
+          className="chatbot-launcher w-14 h-14 text-white rounded-full shadow-lg flex items-center justify-center transition-colors"
           aria-label={isOpen ? "Close assistant" : "Open assistant"}
         >
-          {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
+          {isOpen ? <X size={24} aria-hidden="true" /> : <MessageSquare size={24} aria-hidden="true" />}
         </motion.button>
         {unread > 0 && !isOpen && (
           <span className="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1 rounded-full bg-red-500 text-white text-[12px] leading-[22px] text-center font-medium shadow">

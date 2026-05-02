@@ -1,27 +1,29 @@
 "use client";
 
 import { Reveal, SectionTag } from "./atoms";
+import type { VideoCopy } from "@/types/site-dictionary";
+
+export type { VideoCopy };
 
 export function VideoSection({
   t,
   videoSrc,
 }: {
-  t: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  t: { video: VideoCopy };
   videoSrc?: string;
 }) {
+  const v = t.video;
   return (
     <section id="video" className="section">
       <div className="container">
         <Reveal>
-          <SectionTag>Walkthrough</SectionTag>
+          <SectionTag>{v.tag}</SectionTag>
           <h2 className="section-title">
-            See the{" "}
-            <em>flow</em>
-            {" "}in 60 seconds.
+            {v.titleBefore}
+            <em>{v.titleEm}</em>
+            {v.titleAfter}
           </h2>
-          <p className="section-lede">
-            A quick product tour — sales, CRM, call center, and PDI working together in one calm system.
-          </p>
+          <p className="section-lede">{v.lede}</p>
         </Reveal>
 
         <Reveal delay={0.15}>
@@ -32,19 +34,20 @@ export function VideoSection({
                 src={videoSrc}
                 controls
                 playsInline
-                preload="metadata"
+                preload="none"
+                poster=""
               />
             ) : (
-              <div className="video-placeholder" role="img" aria-label="Video placeholder">
+              <div className="video-placeholder" role="img" aria-label={v.placeholderCta}>
                 <div className="video-placeholder-inner">
-                  <div className="video-dot" />
-                  <div className="video-lines">
+                  <div className="video-dot" aria-hidden="true" />
+                  <div className="video-lines" aria-hidden="true">
                     <div className="video-line strong" />
                     <div className="video-line" />
                     <div className="video-line" />
                   </div>
                 </div>
-                <div className="video-placeholder-cta">Drop a demo video here (MP4) — ready for integration.</div>
+                <div className="video-placeholder-cta">{v.placeholderCta}</div>
               </div>
             )}
           </div>
@@ -53,4 +56,3 @@ export function VideoSection({
     </section>
   );
 }
-

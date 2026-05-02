@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CarMark, SectionTag, Reveal } from "./atoms";
 import { BarChart2, ShoppingCart, Users, PhoneCall, Car, Box, Home, Search, Bell } from "lucide-react";
-import { MotionValue, motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 const ico = {
   chart: <BarChart2 size={16} strokeWidth={1.8} />,
@@ -63,19 +63,19 @@ function ScreenHome({ d }: { d: any }) {
         <div className="crsl-light-brand">
           <CarMark size={20} />
           <span style={{ fontFamily: "var(--f-italic)", fontStyle: "italic", fontSize: 18 }}>
-            <span style={{ color: "#1a1729" }}>car</span>
+            <span className="crsl-brand-word-car">car</span>
             <span style={{ color: "var(--purple-deep)" }}>sale</span>
           </span>
         </div>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center", fontSize: 11, color: "#6b6757" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 999, background: "rgba(124,224,184,.15)", color: "#1f8a5b" }}>● 16:21</span>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center", fontSize: 11 }} className="crsl-topbar-meta">
+          <span className="crsl-topbar-time">● 16:21</span>
           <span style={{ fontFamily: "var(--f-mono)" }}>RU</span>
         </div>
       </div>
       <div style={{ padding: "24px 28px 16px" }}>
-        <div style={{ fontSize: 11, color: "#8a8474", fontFamily: "var(--f-mono)", letterSpacing: ".06em" }}>{d.date}</div>
-        <h2 style={{ fontFamily: "var(--f-italic)", fontSize: 42, fontWeight: 400, color: "#1a1729", margin: "8px 0 4px", letterSpacing: "-0.01em" }}>{d.greeting}</h2>
-        <p style={{ fontSize: 12, color: "#8a8474", margin: 0 }}>{d.subtitle}</p>
+        <div className="crsl-home-date">{d.date}</div>
+        <h2 className="crsl-home-greeting">{d.greeting}</h2>
+        <p className="crsl-home-sub">{d.subtitle}</p>
       </div>
       <div className="crsl-home-grid">
         {d.cards.map((c: any, i: number) => (
@@ -93,11 +93,11 @@ function ScreenHome({ d }: { d: any }) {
         ))}
       </div>
       <div className="crsl-home-foot">
-        <span style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "var(--f-mono)", fontSize: 10, color: "#6b6757" }}>
-          <span style={{ width: 14, height: 14, border: "1px solid #c9c2b5", borderRadius: 3, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 9 }}>✦</span> {d.hint}
+        <span className="crsl-home-hint">
+          <span className="crsl-home-hint-icon">✦</span> {d.hint}
         </span>
-        <span style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "var(--f-mono)", fontSize: 10, color: "var(--purple-deep)", background: "rgba(167,139,250,.12)", padding: "4px 10px", borderRadius: 999 }}>
-          ● CarSale CRM <span style={{ color: "#a8a194" }}>{d.version}</span>
+        <span className="crsl-home-version">
+          ● CarSale CRM <span className="crsl-home-version-num">{d.version}</span>
         </span>
       </div>
     </div>
@@ -141,16 +141,31 @@ function DonutChart({ values, colors, center, centerLabel }: { values: number[];
     cx = 60,
     cy = 60;
   const C = 2 * Math.PI * r;
-  let acc = 0;
+  const lens = values.map((v) => (v / total) * C);
+  const arcs: { len: number; offset: number; color: string }[] = [];
+  let dashAcc = 0;
+  for (let i = 0; i < lens.length; i++) {
+    const len = lens[i];
+    arcs.push({ len, offset: -dashAcc, color: colors[i] });
+    dashAcc += len;
+  }
   return (
     <svg width="120" height="120" viewBox="0 0 120 120">
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--ink-3)" strokeWidth="14" />
-      {values.map((v, i) => {
-        const len = (v / total) * C;
-        const offset = -acc;
-        acc += len;
-        return <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={colors[i]} strokeWidth="14" strokeDasharray={`${len} ${C - len}`} strokeDashoffset={offset} transform={`rotate(-90 ${cx} ${cy})`} />;
-      })}
+      {arcs.map((seg, i) => (
+        <circle
+          key={i}
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="none"
+          stroke={seg.color}
+          strokeWidth="14"
+          strokeDasharray={`${seg.len} ${C - seg.len}`}
+          strokeDashoffset={seg.offset}
+          transform={`rotate(-90 ${cx} ${cy})`}
+        />
+      ))}
       <text x={cx} y={cy - 2} textAnchor="middle" style={{ fontFamily: "var(--f-display)", fontSize: 22, fontWeight: 500, fill: "var(--cream)" }}>{center}</text>
       <text x={cx} y={cy + 14} textAnchor="middle" style={{ fontFamily: "var(--f-mono)", fontSize: 9, fill: "var(--cream-mute)" }}>{centerLabel}</text>
     </svg>
@@ -260,14 +275,16 @@ function ScreenSales({ d }: { d: any }) {
     (({ Новый: "new", Черновик: "draft", Продолжено: "progress", "В очереди": "queue", Бронь: "reserved" } as Record<string, string>)[s] || "new");
   return (
     <CrslFrame sidebar={sidebar}>
-      <div className="crsl-page-head">
-        <div>
+      <div className="crsl-page-head crsl-page-head--split">
+        <div className="crsl-page-head-titles">
           <h2 className="crsl-page-title">{d.title}</h2>
           <p className="crsl-page-sub">{d.subtitle}</p>
         </div>
-        <div style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 11, color: "var(--cream-mute)" }}>
-          <span style={{ fontFamily: "var(--f-mono)" }}>Поиск… VIN, контракт, ИНН, имя</span>
-          <span style={{ width: 28, height: 28, display: "inline-flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--ink-line)", borderRadius: 8 }}>{ico.search}</span>
+        <div className="crsl-search-field" role="search">
+          <span className="crsl-search-placeholder">Поиск… VIN, контракт, ИНН, имя</span>
+          <span className="crsl-search-trigger" aria-hidden="true">
+            {ico.search}
+          </span>
         </div>
       </div>
       <div className="crsl-status-strip">
@@ -290,12 +307,20 @@ function ScreenSales({ d }: { d: any }) {
       <div className="crsl-tabs">
         {d.tabs.map((tab: string, i: number) => <span key={i} className={"crsl-tab" + (i === 0 ? " active" : "")}>{tab}</span>)}
       </div>
-      <div className="crsl-toolbar">
-        <div style={{ display: "flex", gap: 6 }}>
-          {d.toolbar.map((t: string, i: number) => <span key={i} className="crsl-tool-btn">{t}</span>)}
+      <div className="crsl-toolbar crsl-toolbar--dense">
+        <div className="crsl-toolbar-group">
+          {d.toolbar.map((t: string, i: number) => (
+            <span key={i} className="crsl-tool-btn">
+              {t}
+            </span>
+          ))}
         </div>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
-          {d.actions.slice(0, 3).map((t: string, i: number) => <span key={i} className="crsl-tool-btn">{t}</span>)}
+        <div className="crsl-toolbar-group crsl-toolbar-group--end">
+          {d.actions.slice(0, 3).map((t: string, i: number) => (
+            <span key={i} className="crsl-tool-btn">
+              {t}
+            </span>
+          ))}
           <span className="crsl-tool-btn primary">{d.actions[3]}</span>
         </div>
       </div>
@@ -628,158 +653,116 @@ function ScreenParts({ d }: { d: any }) {
   );
 }
 
-type Slide = {
-  id: string;
-  num: string;
-  name: string;
-  desc: string;
-  icon: React.ReactElement;
-  screen: React.ReactNode;
-};
-
-function ProductSlide({
-  slide,
-  index,
-  total,
-  progress,
-}: {
-  slide: Slide;
-  index: number;
-  total: number;
-  progress: MotionValue<number>;
-}) {
-  const center = total === 1 ? 0 : index / (total - 1);
-  const a = Math.max(0, center - 0.16);
-  const b = center;
-  const c = Math.min(1, center + 0.16);
-
-  const opacity = useTransform(progress, [a, b, c], [0.35, 1, 0.35]);
-  const scale = useTransform(progress, [a, b, c], [0.96, 1, 0.96]);
-  const y = useTransform(progress, [a, b, c], [18, 0, 18]);
-  const bgY = useTransform(progress, (v) => (v - center) * -60);
-
-  return (
-    <div className="product-slide">
-      <div className="container">
-        <motion.div className="product-screen-wrap" style={{ opacity, scale, y }}>
-          <motion.div className="product-orb" style={{ y: bgY }} aria-hidden="true" />
-          <div className="product-screen-label">
-            <span className="k">{slide.num}</span>
-            <span className="n">{slide.name}</span>
-            <span className="d">{slide.desc}</span>
-          </div>
-          <div className="module-screen">{slide.screen}</div>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
 export function Dashboard({ t }: { t: any }) {
   const m = t.modules;
 
-  const screens: Record<string, React.ReactNode> = {
-    home: <ScreenHome d={m.home} />,
-    analytics: <ScreenAnalytics d={m.analytics} />,
-    sales: <ScreenSales d={m.sales} />,
-    crm: <ScreenCRM d={m.crm} />,
-    callcenter: <ScreenCallCenter d={m.callcenter} />,
-    pdi: <ScreenPDI d={m.pdi} />,
-    parts: <ScreenParts d={m.parts} />,
-  };
+  const slides = useMemo(() => {
+    const screens: Record<string, React.ReactNode> = {
+      home: <ScreenHome d={m.home} />,
+      analytics: <ScreenAnalytics d={m.analytics} />,
+      sales: <ScreenSales d={m.sales} />,
+      crm: <ScreenCRM d={m.crm} />,
+      callcenter: <ScreenCallCenter d={m.callcenter} />,
+      pdi: <ScreenPDI d={m.pdi} />,
+      parts: <ScreenParts d={m.parts} />,
+    };
+    return (m.list as { id: string; num: string; name: string; desc: string }[]).map((mod) => ({
+      id: mod.id,
+      num: mod.num,
+      name: mod.name,
+      desc: mod.desc,
+      icon: moduleIcons[mod.id],
+      screen: screens[mod.id],
+    }));
+  }, [m]);
 
-  const slides = useMemo(
-    () =>
-      (m.list as any[]).map((mod) => ({
-        id: mod.id as string,
-        num: mod.num as string,
-        name: mod.name as string,
-        desc: mod.desc as string,
-        icon: moduleIcons[mod.id as string],
-        screen: screens[mod.id as string],
-      })),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [m.list]
-  );
-
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const { scrollYProgress } = useScroll({
-    target: scrollerRef,
-    offset: ["start start", "end end"],
-  });
-
-  const x = useTransform(scrollYProgress, (v) => `-${v * (slides.length - 1) * 100}vw`);
   const [activeIdx, setActiveIdx] = useState(0);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const idx = Math.round(v * (slides.length - 1));
-    setActiveIdx(Math.max(0, Math.min(slides.length - 1, idx)));
-  });
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const el = sectionRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
+      e.preventDefault();
+      const n = slides.length;
+      if (e.key === "ArrowRight") setActiveIdx((i) => Math.min(n - 1, i + 1));
+      else setActiveIdx((i) => Math.max(0, i - 1));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [slides.length]);
+
+  const slide = slides[activeIdx];
 
   return (
-    <section id="product" className="section">
-      <div className="product-hscroll" ref={scrollerRef} style={{ height: `${Math.max(4, slides.length) * 100}vh` }}>
-        <div className="product-sticky">
-          <div className="product-head-wrap">
-            <div className="container">
-              <div className="product-head">
-                <Reveal>
-                  <SectionTag>{m.tag}</SectionTag>
-                  <h2 className="section-title">
-                    {m.title[0]}
-                    <em>{m.title[1]}</em>
-                    {m.title[2]}
-                  </h2>
-                  <p className="section-lede">{m.lede}</p>
-                </Reveal>
+    <section id="product" className="section product-showcase" ref={sectionRef} tabIndex={-1}>
+      <div className="container">
+        <div className="product-head-wrap product-head-wrap--inline">
+          <div className="product-head">
+            <Reveal>
+              <SectionTag>{m.tag}</SectionTag>
+              <h2 className="section-title">
+                {m.title[0]}
+                <em>{m.title[1]}</em>
+                {m.title[2]}
+              </h2>
+              <p className="section-lede">{m.lede}</p>
+            </Reveal>
 
-                <div
-                  className="product-rail"
-                  aria-label="Modules rail"
-                  role="tablist"
+            <div className="product-rail" aria-label="Product modules" role="tablist">
+              {slides.map((s, i) => (
+                <button
+                  type="button"
+                  key={s.id}
+                  role="tab"
+                  id={`product-tab-${s.id}`}
+                  aria-selected={i === activeIdx}
+                  aria-controls="product-tabpanel"
+                  className={"product-chip" + (i === activeIdx ? " active" : "")}
+                  onClick={() => setActiveIdx(i)}
                 >
-                  {slides.map((s, i) => (
-                    <button
-                      type="button"
-                      key={s.id}
-                      role="tab"
-                      aria-selected={i === activeIdx}
-                      className={"product-chip" + (i === activeIdx ? " active" : "")}
-                      onClick={() => {
-                        const el = scrollerRef.current;
-                        if (!el) return;
-                        const rect = el.getBoundingClientRect();
-                        const total = el.offsetHeight - window.innerHeight;
-                        const ratio = slides.length === 1 ? 0 : i / (slides.length - 1);
-                        const top = window.scrollY + rect.top + total * ratio;
-                        window.scrollTo({ top, behavior: "smooth" });
-                      }}
-                    >
-                      <span className="product-chip-icon">{s.icon}</span>
-                      <span className="product-chip-body">
-                        <span className="product-chip-num">{s.num}</span>
-                        <span className="product-chip-name">{s.name}</span>
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+                  <span className="product-chip-icon" aria-hidden="true">
+                    {s.icon}
+                  </span>
+                  <span className="product-chip-body">
+                    <span className="product-chip-num">{s.num}</span>
+                    <span className="product-chip-name">{s.name}</span>
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
+        </div>
+      </div>
 
-          <div className="product-stage">
-            <motion.div className="product-track" style={{ x }}>
-              {slides.map((s, i) => (
-                <ProductSlide
-                  key={s.id}
-                  slide={s}
-                  index={i}
-                  total={slides.length}
-                  progress={scrollYProgress}
-                />
-              ))}
+      <div className="product-stage-tabbed">
+        <div className="container">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={slide.id}
+              id="product-tabpanel"
+              role="tabpanel"
+              aria-labelledby={`product-tab-${slide.id}`}
+              className="product-preview-shell"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: [0.2, 0.8, 0.2, 1] }}
+            >
+              <div className="product-orb product-orb--static" aria-hidden="true" />
+              <div className="product-screen-wrap product-screen-wrap--single">
+                <div className="product-preview-caption" aria-label={`${slide.num} ${slide.name}: ${slide.desc}`}>
+                  <span className="product-preview-caption-k">{slide.num}</span>
+                  <span className="product-preview-caption-n">{slide.name}</span>
+                  <span className="product-preview-caption-d">{slide.desc}</span>
+                </div>
+                <div className="module-screen">{slide.screen}</div>
+              </div>
             </motion.div>
-          </div>
+          </AnimatePresence>
         </div>
       </div>
     </section>

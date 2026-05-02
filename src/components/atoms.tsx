@@ -2,6 +2,7 @@
 
 import { Fragment } from "react";
 import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "./hooks";
 
 export const Arrow = ({ size = 14 }: { size?: number }) => (
   <svg className="arrow" width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -48,12 +49,25 @@ export function Reveal({
   className?: string;
   delay?: number;
 }) {
+  const reduceMotion = usePrefersReducedMotion();
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24, filter: "blur(4px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      initial={
+        reduceMotion
+          ? { opacity: 1, y: 0 }
+          : { opacity: 0, y: 24, filter: "blur(4px)" }
+      }
+      whileInView={
+        reduceMotion
+          ? { opacity: 1, y: 0 }
+          : { opacity: 1, y: 0, filter: "blur(0px)" }
+      }
       viewport={{ once: true, margin: "-10%" }}
-      transition={{ duration: 0.7, ease: [0.2, 0.7, 0.2, 1], delay }}
+      transition={
+        reduceMotion
+          ? { duration: 0 }
+          : { duration: 0.7, ease: [0.2, 0.7, 0.2, 1], delay }
+      }
       className={className}
     >
       {children}
@@ -108,18 +122,23 @@ export function RisingWords({
   emIndex?: number;
   delay?: number;
 }) {
+  const reduceMotion = usePrefersReducedMotion();
   return (
     <>
       {words.map((w, i) => (
         <Fragment key={i}>
           <motion.span
-            initial={{ opacity: 0, y: 40 }}
+            initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.8,
-              ease: [0.2, 0.7, 0.2, 1],
-              delay: (delay + i * 90) / 1000,
-            }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : {
+                    duration: 0.8,
+                    ease: [0.2, 0.7, 0.2, 1],
+                    delay: (delay + i * 90) / 1000,
+                  }
+            }
             className={"inline-block" + (i === emIndex ? " em" : "")}
           >
             {w}

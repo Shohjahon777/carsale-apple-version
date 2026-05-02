@@ -42,7 +42,7 @@ function FeatVisualSales() {
 
 function FeatVisualFunnel() {
   const data = [
-    { n: "Новый", v: 25, c: "#0066CC" },
+    { n: "Новый", v: 25, c: "#7C5CFF" },
     { n: "Контакт", v: 38, c: "#004499" },
     { n: "Не дозвон", v: 13, c: "#34C759" },
     { n: "Успех", v: 6, c: "#34C759" },
@@ -76,7 +76,7 @@ function FeatVisualCalls() {
     <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6, alignItems: "end", height: 70 }}>
       {data.map((d, i) => (
         <div key={i} style={{ display: "flex", gap: 2, alignItems: "end", height: "100%" }}>
-          <span style={{ flex: 1, height: `${(d[0] / max) * 100}%`, background: "#0066CC", borderRadius: "2px 2px 0 0" }} />
+          <span style={{ flex: 1, height: `${(d[0] / max) * 100}%`, background: "#7C5CFF", borderRadius: "2px 2px 0 0" }} />
           <span style={{ flex: 1, height: `${(d[1] / max) * 100}%`, background: "#34C759", borderRadius: "2px 2px 0 0" }} />
           <span style={{ flex: 1, height: `${(d[2] / max) * 100}%`, background: "#FF3B30", borderRadius: "2px 2px 0 0" }} />
         </div>
