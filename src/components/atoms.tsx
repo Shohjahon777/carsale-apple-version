@@ -1,8 +1,14 @@
 "use client";
 
 import { Fragment } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePrefersReducedMotion } from "./hooks";
+
+/** Intrinsic dimensions of brand assets in /public */
+const LOGO_ICON = { w: 820, h: 1004 };
+const LOGO_HORIZONTAL = { w: 695, h: 202 };
+const LOGO_STACKED = { w: 2076, h: 1208 };
 
 export const Arrow = ({ size = 14 }: { size?: number }) => (
   <svg className="arrow" width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -75,43 +81,73 @@ export function Reveal({
   );
 }
 
+/** Pin + car mark only (sidebar, small UI) */
 export const CarMark = ({ size = 28 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 64 70" fill="none" aria-hidden="true">
-    <path
-      d="M10 6 H54 A6 6 0 0 1 60 12 V42 A6 6 0 0 1 54 48 H38 L32 60 L26 48 H10 A6 6 0 0 1 4 42 V12 A6 6 0 0 1 10 6 Z"
-      fill="#A78BFA"
-    />
-    <path
-      d="M16 28 C18 22, 22 19, 32 19 C42 19, 46 22, 48 28 L50 32 L14 32 Z"
-      fill="#fff"
-    />
-    <rect x="14" y="32" width="36" height="2" rx="1" fill="#fff" />
-    <circle cx="22" cy="27" r="1.6" fill="#A78BFA" />
-    <circle cx="42" cy="27" r="1.6" fill="#A78BFA" />
-    <path
-      d="M19 36 C24 41, 40 41, 45 36"
-      stroke="#fff"
-      strokeWidth="3"
-      strokeLinecap="round"
-      fill="none"
-    />
-  </svg>
+  <Image
+    src="/icon.png"
+    alt=""
+    width={LOGO_ICON.w}
+    height={LOGO_ICON.h}
+    className="carsale-mark"
+    style={{ width: size, height: size, objectFit: "contain" }}
+    sizes={`${size}px`}
+    aria-hidden
+  />
 );
 
-export const Wordmark = () => (
-  <span
-    style={{
-      fontFamily: "var(--f-italic)",
-      fontStyle: "italic",
-      fontSize: 26,
-      letterSpacing: "-0.01em",
-      lineHeight: 1,
-    }}
-  >
-    <span style={{ color: "var(--cream)" }}>car</span>
-    <span style={{ color: "var(--purple)" }}>sale</span>
-  </span>
+/** Full horizontal lockup: icon + wordmark */
+export const CarsaleLogo = ({
+  height = 34,
+  className = "",
+  priority = false,
+}: {
+  height?: number;
+  className?: string;
+  priority?: boolean;
+}) => {
+  const w = Math.round((height * LOGO_HORIZONTAL.w) / LOGO_HORIZONTAL.h);
+  return (
+    <Image
+      src="/logo-horizontal.png"
+      alt="Carsale"
+      width={LOGO_HORIZONTAL.w}
+      height={LOGO_HORIZONTAL.h}
+      className={`carsale-logo-horizontal ${className}`.trim()}
+      style={{ height, width: "auto", maxWidth: "100%" }}
+      sizes={`${w}px`}
+      priority={priority}
+    />
+  );
+};
+
+/** Stacked logo with tagline — decorative watermark */
+export const CarsaleLogoStacked = ({
+  className = "",
+  width: widthPx,
+  maxWidth = "min(92vw, 640px)",
+}: {
+  className?: string;
+  width?: number;
+  maxWidth?: string;
+}) => (
+  <Image
+    src="/logo-stacked.png"
+    alt=""
+    width={LOGO_STACKED.w}
+    height={LOGO_STACKED.h}
+    className={`carsale-logo-stacked ${className}`.trim()}
+    style={
+      widthPx != null
+        ? { width: widthPx, height: "auto" }
+        : { width: "100%", maxWidth, height: "auto" }
+    }
+    sizes="(max-width: 768px) 92vw, 640px"
+    aria-hidden
+  />
 );
+
+/** @deprecated Prefer CarsaleLogo — kept for imports that expect a “wordmark” block */
+export const Wordmark = ({ height = 30 }: { height?: number }) => <CarsaleLogo height={height} />;
 
 export function RisingWords({
   words,

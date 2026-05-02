@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CarMark, Wordmark, Reveal } from "./atoms";
+import { CarsaleLogo, CarsaleLogoStacked, Reveal } from "./atoms";
 
 export function Footer({ t }: { t: any }) {
   return (
@@ -10,8 +10,7 @@ export function Footer({ t }: { t: any }) {
         <Reveal className="footer-grid">
           <div>
             <div className="footer-brand">
-              <CarMark size={28} />
-              <Wordmark />
+              <CarsaleLogo height={32} />
             </div>
             <p className="footer-tagline">{t.footer.tagline}</p>
           </div>
@@ -29,7 +28,9 @@ export function Footer({ t }: { t: any }) {
           </div>
         </Reveal>
 
-        <Reveal className="footer-mega" delay={0.2}>car<em>sale</em></Reveal>
+        <Reveal className="footer-mega" delay={0.2}>
+          <CarsaleLogoStacked />
+        </Reveal>
 
         <div className="footer-bottom">
           <span>{t.footer.copy}</span>

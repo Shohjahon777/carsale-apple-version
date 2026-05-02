@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CarMark, SectionTag, Reveal } from "./atoms";
+import { CarMark, CarsaleLogo, SectionTag, Reveal } from "./atoms";
 import { BarChart2, ShoppingCart, Users, PhoneCall, Car, Box, Home, Search, Bell } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -61,11 +61,7 @@ function ScreenHome({ d }: { d: any }) {
     <div className="crsl-frame crsl-frame-light">
       <div className="crsl-light-topbar">
         <div className="crsl-light-brand">
-          <CarMark size={20} />
-          <span style={{ fontFamily: "var(--f-italic)", fontStyle: "italic", fontSize: 18 }}>
-            <span className="crsl-brand-word-car">car</span>
-            <span style={{ color: "var(--purple-deep)" }}>sale</span>
-          </span>
+          <CarsaleLogo height={26} className="crsl-light-brand-logo" />
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center", fontSize: 11 }} className="crsl-topbar-meta">
           <span className="crsl-topbar-time">● 16:21</span>

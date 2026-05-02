@@ -31,6 +31,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://carsale.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png" }],
+    apple: "/icon.png",
+  },
   title: "Carsale — Automation for car dealerships",
   description:
     "One system for car dealers — sales, CRM, call center, pre-sale prep, and parts. Seven modules, one calm roof.",

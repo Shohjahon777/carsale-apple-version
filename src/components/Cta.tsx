@@ -58,18 +58,18 @@ export function Cta({ t }: { t: any }) {
                     <input id="cta-company" name="organization" type="text" required autoComplete="organization" />
                   </div>
                 </div>
-                <div className="field-row">
+                <div className="field-row field-row--filials">
                   <div className="field">
                     <label htmlFor="cta-role">{t.cta.f_role}</label>
                     <input id="cta-role" name="job-title" type="text" autoComplete="organization-title" />
                   </div>
-                  <div className="field">
+                  <div className="field field--filials-select">
                     <label htmlFor="cta-filials">{t.cta.f_filials}</label>
-                    <select id="cta-filials" name="filials">
-                      <option>1</option>
-                      <option>2–4</option>
-                      <option>5–8</option>
-                      <option>9+</option>
+                    <select id="cta-filials" name="filials" aria-label={t.cta.f_filials}>
+                      <option value="1">1</option>
+                      <option value="2-4">2–4</option>
+                      <option value="5-8">5–8</option>
+                      <option value="9+">9+</option>
                     </select>
                   </div>
                 </div>

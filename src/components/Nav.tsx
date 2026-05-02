@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Arrow, CarMark, Wordmark } from "./atoms";
+import { Arrow, CarsaleLogo } from "./atoms";
 import { useScrolled } from "./hooks";
 import type { Lang } from "./i18n";
 import { Moon, Sun, Menu, X } from "lucide-react";
@@ -61,8 +61,7 @@ export function Nav({
       <header className={"nav" + (scrolled ? " scrolled" : "")}>
         <div className="container nav-row">
           <a href="#top" className="nav-logo" aria-label="Carsale home">
-            <CarMark size={28} />
-            <Wordmark />
+            <CarsaleLogo height={34} priority />
           </a>
           <nav className="nav-links" aria-label="Primary">
             <a href="#features">{nav.features}</a>
