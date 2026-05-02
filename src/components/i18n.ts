@@ -15,9 +15,29 @@ export const I18N: Record<Lang, any> = {
       stat1: ["7", "модулей", "в одной системе"],
       stat2: ["43%", "быстрее", "первый ответ на входящий"],
       stat3: ["12", "филиалов", "в среднем у клиента"],
-      typeLed: { line1: "Семь", line2: "модулей,", line3: "одна", line4: "система." }
+      typeLed: { line1: "Семь", line2: "модулей,", line3: "одна", line4: "система." },
+      mockChrome: "CARSALE · LIVE",
+      mockTrend: "14 дн. тренд",
+      mockKpis: [
+        { l: "Звонки", v: "1 284", d: "+12%" },
+        { l: "Лиды", v: "312", d: "+24%" },
+        { l: "AHT", v: "2:48", d: "-22с" },
+      ],
+      mockQueue: [
+        { n: "А. Каримов", s: "BMW X5", tag: "live", tagLabel: "лайв" },
+        { n: "М. Волкова", s: "Lexus RX", tag: "new", tagLabel: "новый" },
+        { n: "О. Саидов", s: "Toyota Camry", tag: "live", tagLabel: "лайв" },
+      ],
     },
     marquee: ["Главный экран", "Аналитика", "Торговля", "CRM и лиды", "Колл-центр", "Предпродажи (PDI)", "Запчасти", "Интеграция 1С"],
+    video: {
+      tag: "Обзор",
+      titleBefore: "Посмотрите ",
+      titleEm: "поток",
+      titleAfter: " за 60 секунд.",
+      lede: "Короткий тур по продукту — продажи, CRM, колл-центр и PDI в одной спокойной системе.",
+      placeholderCta: "Добавьте демо-ролик (MP4) — готово к интеграции.",
+    },
     features: {
       tag: "Возможности",
       title: ["Семь модулей для каждого ", "отдела ", "дилера."],
@@ -257,10 +277,14 @@ export const I18N: Record<Lang, any> = {
       title: ["Простые планы, ", "по филиалам."],
       lede: "Все планы включают неограниченных менеджеров, запись звонков и интеграцию 1С. Можно отменить в любой момент.",
       monthly: "/ месяц",
+      monthlyUzs: "/ мес. (UZS)",
+      currencyUsd: "USD",
+      currencyUzs: "UZS",
+      popularLabel: "Популярный",
       tiers: [
-        { name: "Старт", price: ["$", "390"], desc: "Для дилерских центров, наводящих порядок в первой CRM.", features: ["1 филиал", "До 15 менеджеров", "Торговля и CRM", "Колл-центр (базовый)", "Поддержка по почте и в чате"], cta: "Начать пробный" },
-        { name: "Сеть", price: ["$", "1 290"], desc: "Самый популярный. Все 7 модулей и интеграция 1С.", features: ["До 8 филиалов", "Без лимита менеджеров", "Все 7 модулей включены", "Интеграция 1С", "IVR и аналитика КЦ", "Приоритетный онбординг"], cta: "Записаться на демо", popular: true },
-        { name: "Enterprise", price: ["", "Индивид."], desc: "Для крупных дилерских холдингов с собственными ERP и SLA.", features: ["Без лимита филиалов", "Персональный менеджер", "Кастом интеграции и API", "On-prem развёртывание", "SLA 99,9%", "Квартальные ревью"], cta: "Связаться" }
+        { name: "Старт", price: ["$", "390"], priceUzs: ["so'm ", "4 875 000"], desc: "Для дилерских центров, наводящих порядок в первой CRM.", features: ["1 филиал", "До 15 менеджеров", "Торговля и CRM", "Колл-центр (базовый)", "Поддержка по почте и в чате"], cta: "Начать пробный" },
+        { name: "Сеть", price: ["$", "1 290"], priceUzs: ["so'm ", "16 125 000"], desc: "Самый популярный. Все 7 модулей и интеграция 1С.", features: ["До 8 филиалов", "Без лимита менеджеров", "Все 7 модулей включены", "Интеграция 1С", "IVR и аналитика КЦ", "Приоритетный онбординг"], cta: "Записаться на демо", popular: true },
+        { name: "Enterprise", price: ["", "Индивид."], priceUzs: ["", "Индивид."], desc: "Для крупных дилерских холдингов с собственными ERP и SLA.", features: ["Без лимита филиалов", "Персональный менеджер", "Кастом интеграции и API", "On-prem развёртывание", "SLA 99,9%", "Квартальные ревью"], cta: "Связаться" }
       ]
     },
     faq: {
@@ -308,9 +332,29 @@ export const I18N: Record<Lang, any> = {
       stat1: ["7", "modul", "bitta tizimda"],
       stat2: ["43%", "tezroq", "kiruvchi qo'ng'iroqqa javob"],
       stat3: ["12", "filial", "mijozda o'rtacha"],
-      typeLed: { line1: "Yetti", line2: "modul,", line3: "bitta", line4: "tizim." }
+      typeLed: { line1: "Yetti", line2: "modul,", line3: "bitta", line4: "tizim." },
+      mockChrome: "CARSALE · LIVE",
+      mockTrend: "14 kunlik trend",
+      mockKpis: [
+        { l: "Qo'ng'iroqlar", v: "1 284", d: "+12%" },
+        { l: "Lidlar", v: "312", d: "+24%" },
+        { l: "AHT", v: "2:48", d: "-22s" },
+      ],
+      mockQueue: [
+        { n: "A. Karimov", s: "BMW X5", tag: "live", tagLabel: "jonli" },
+        { n: "M. Volkova", s: "Lexus RX", tag: "new", tagLabel: "yangi" },
+        { n: "O. Saidov", s: "Toyota Camry", tag: "live", tagLabel: "jonli" },
+      ],
     },
     marquee: ["Bosh ekran", "Tahlil", "Sotuv", "CRM va lidlar", "Call-markaz", "Sotuvdan oldin (PDI)", "Ehtiyot qism", "1C integratsiya"],
+    video: {
+      tag: "Video",
+      titleBefore: "60 soniyada ",
+      titleEm: "jarayonni",
+      titleAfter: " ko'ring.",
+      lede: "Tezkor mahsulot turi — sotuv, CRM, call-markaz va PDI bitta tizimda.",
+      placeholderCta: "Demo MP4 qo‘shing — integratsiya uchun tayyor.",
+    },
     features: {
       tag: "Imkoniyatlar",
       title: ["Har bir diler ", "bo'limi ", "uchun yetti modul."],
@@ -353,10 +397,14 @@ export const I18N: Record<Lang, any> = {
       title: ["Oddiy tariflar, ", "filial bo'yicha."],
       lede: "Barcha tariflarda cheksiz menejerlar, qo'ng'iroq yozuvi va 1C integratsiyasi.",
       monthly: "/ oy",
+      monthlyUzs: "/ oy (UZS)",
+      currencyUsd: "USD",
+      currencyUzs: "UZS",
+      popularLabel: "Eng mashhur",
       tiers: [
-        { name: "Start", price: ["$", "390"], desc: "Bitta filial dilerlik markazlari uchun.", features: ["1 filial", "15 ta menejergacha", "Sotuv va CRM", "Call-markaz (asosiy)", "Email qo'llab-quvvatlash"], cta: "Sinov boshlash" },
-        { name: "Tarmoq", price: ["$", "1 290"], desc: "Eng mashhur. Barcha 7 modul va 1C integratsiyasi.", features: ["8 filialgacha", "Cheksiz menejer", "Barcha 7 modul", "1C integratsiya", "IVR va KM tahlili", "Ustuvor onbording"], cta: "Demo olish", popular: true },
-        { name: "Enterprise", price: ["", "Maxsus"], desc: "Yirik holdinglar uchun.", features: ["Cheksiz filial", "Shaxsiy menejer", "Maxsus integratsiya va API", "On-prem", "99.9% SLA", "Choraklik ko'rib chiqish"], cta: "Bog'lanish" }
+        { name: "Start", price: ["$", "390"], priceUzs: ["so'm ", "4 875 000"], desc: "Bitta filial dilerlik markazlari uchun.", features: ["1 filial", "15 ta menejergacha", "Sotuv va CRM", "Call-markaz (asosiy)", "Email qo'llab-quvvatlash"], cta: "Sinov boshlash" },
+        { name: "Tarmoq", price: ["$", "1 290"], priceUzs: ["so'm ", "16 125 000"], desc: "Eng mashhur. Barcha 7 modul va 1C integratsiyasi.", features: ["8 filialgacha", "Cheksiz menejer", "Barcha 7 modul", "1C integratsiya", "IVR va KM tahlili", "Ustuvor onbording"], cta: "Demo olish", popular: true },
+        { name: "Enterprise", price: ["", "Maxsus"], priceUzs: ["", "Maxsus"], desc: "Yirik holdinglar uchun.", features: ["Cheksiz filial", "Shaxsiy menejer", "Maxsus integratsiya va API", "On-prem", "99.9% SLA", "Choraklik ko'rib chiqish"], cta: "Bog'lanish" }
       ]
     },
     faq: {
@@ -404,9 +452,29 @@ export const I18N: Record<Lang, any> = {
       stat1: ["7", "modules", "in one platform"],
       stat2: ["43%", "faster", "first-response on inbound"],
       stat3: ["12", "filials", "average rollout per client"],
-      typeLed: { line1: "Seven", line2: "modules,", line3: "one", line4: "system." }
+      typeLed: { line1: "Seven", line2: "modules,", line3: "one", line4: "system." },
+      mockChrome: "CARSALE · LIVE",
+      mockTrend: "14d trend",
+      mockKpis: [
+        { l: "Calls", v: "1,284", d: "+12%" },
+        { l: "Leads", v: "312", d: "+24%" },
+        { l: "AHT", v: "2:48", d: "-22s" },
+      ],
+      mockQueue: [
+        { n: "A. Karimov", s: "BMW X5", tag: "live", tagLabel: "live" },
+        { n: "M. Volkova", s: "Lexus RX", tag: "new", tagLabel: "new" },
+        { n: "O. Saidov", s: "Toyota Camry", tag: "live", tagLabel: "live" },
+      ],
     },
     marquee: ["Home", "Analytics", "Sales", "CRM & leads", "Call center", "Pre-sale (PDI)", "Spare parts", "1C integration"],
+    video: {
+      tag: "Walkthrough",
+      titleBefore: "See the ",
+      titleEm: "flow",
+      titleAfter: " in 60 seconds.",
+      lede: "A quick product tour — sales, CRM, call center, and PDI working together in one calm system.",
+      placeholderCta: "Drop a demo video here (MP4) — ready for integration.",
+    },
     features: {
       tag: "Capabilities",
       title: ["Seven modules for every ", "dealer ", "department."],
@@ -449,10 +517,14 @@ export const I18N: Record<Lang, any> = {
       title: ["Simple plans, ", "per filial."],
       lede: "All plans include unlimited managers, call recording, and 1C integration. Cancel any time.",
       monthly: "/ month",
+      monthlyUzs: "/ month (UZS)",
+      currencyUsd: "USD",
+      currencyUzs: "UZS",
+      popularLabel: "Most popular",
       tiers: [
-        { name: "Starter", price: ["$", "390"], desc: "For single-location dealerships getting their first CRM in order.", features: ["1 filial", "Up to 15 managers", "Sales & CRM", "Basic call center", "Email & chat support"], cta: "Start trial" },
-        { name: "Network", price: ["$", "1,290"], desc: "Most popular. All 7 modules and 1C integration included.", features: ["Up to 8 filials", "Unlimited managers", "All 7 modules", "1C integration", "IVR + call analytics", "Priority onboarding"], cta: "Book a demo", popular: true },
-        { name: "Enterprise", price: ["", "Custom"], desc: "For large dealer holdings with bespoke ERP and SLA needs.", features: ["Unlimited filials", "Dedicated success manager", "Custom integrations & API", "On-prem deployment", "99.9% SLA", "Quarterly business reviews"], cta: "Contact sales" }
+        { name: "Starter", price: ["$", "390"], priceUzs: ["so'm ", "4,875,000"], desc: "For single-location dealerships getting their first CRM in order.", features: ["1 filial", "Up to 15 managers", "Sales & CRM", "Basic call center", "Email & chat support"], cta: "Start trial" },
+        { name: "Network", price: ["$", "1,290"], priceUzs: ["so'm ", "16,125,000"], desc: "Most popular. All 7 modules and 1C integration included.", features: ["Up to 8 filials", "Unlimited managers", "All 7 modules", "1C integration", "IVR + call analytics", "Priority onboarding"], cta: "Book a demo", popular: true },
+        { name: "Enterprise", price: ["", "Custom"], priceUzs: ["", "Custom"], desc: "For large dealer holdings with bespoke ERP and SLA needs.", features: ["Unlimited filials", "Dedicated success manager", "Custom integrations & API", "On-prem deployment", "99.9% SLA", "Quarterly business reviews"], cta: "Contact sales" }
       ]
     },
     faq: {

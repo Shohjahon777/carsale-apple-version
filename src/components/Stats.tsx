@@ -12,7 +12,7 @@ function StatCell({ num, label }: { num: [string, string]; label: string }) {
     <div className="cell" ref={ref}>
       <div className="num">
         <em>{val}</em>
-        {num[1]}
+        {num[1] && <span className="num-suffix">{num[1]}</span>}
       </div>
       <div className="label">{label}</div>
     </div>
